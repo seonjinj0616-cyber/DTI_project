@@ -1,0 +1,6 @@
+﻿id,uniprot_id,gene_symbol,protein_name,ensembl_gene_ids,target_ids_used,status
+Q8TF76_Q301L,Q8TF76,HASPIN,Serine/threonine-protein kinase haspin,ENSG00000177602,ENSG00000177602,matched_ensembl
+WT_Q15722,Q15722,LTB4R,Leukotriene B4 receptor 1,"ENSG00000213903,ENSG00000285456",ENSG00000213903,matched_ensembl
+WT_Q9NV96,Q9NV96,CDC50A,Cell cycle control protein 50A,ENSG00000112697,ENSG00000112697,matched_ensembl
+WT_O43193,O43193,MLNR,Motilin receptor,ENSG00000102539,ENSG00000102539,matched_ensembl
+WT_Q9NPC1,Q9NPC1,LTB4R2,Leukotriene B4 receptor 2,"ENSG00000213906,ENSG00000285203",ENSG00000213906,matched_ensembl

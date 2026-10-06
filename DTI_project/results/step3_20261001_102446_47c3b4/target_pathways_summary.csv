@@ -1,0 +1,6 @@
+﻿target_id,gene_symbol,n_pathways,pathways,summary
+ENSG00000102539,MLNR,2,G alpha (q) signalling events; Peptide ligand-binding receptors,"MLNR: 2개 경로에 관여 -> G alpha (q) signalling events, Peptide ligand-binding receptors (Reactome 참고)"
+ENSG00000112697,CDC50A,1,Neutrophil degranulation,CDC50A: 1개 경로에 관여 -> Neutrophil degranulation (Reactome 참고)
+ENSG00000177602,HASPIN,0,,HASPIN: 알려진 Reactome 경로 정보가 없습니다.
+ENSG00000213903,LTB4R,2,G alpha (q) signalling events; Leukotriene receptors,"LTB4R: 2개 경로에 관여 -> G alpha (q) signalling events, Leukotriene receptors (Reactome 참고)"
+ENSG00000213906,LTB4R2,2,G alpha (q) signalling events; Leukotriene receptors,"LTB4R2: 2개 경로에 관여 -> G alpha (q) signalling events, Leukotriene receptors (Reactome 참고)"

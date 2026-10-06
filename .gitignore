@@ -1,0 +1,11 @@
+# 대용량 데이터 제외 (코드 파일만 남김)
+DTI_project/data/**
+!DTI_project/data/**/
+!DTI_project/data/**/*.py
+!DTI_project/data/**/*.sql
+!DTI_project/data/**/*.ipynb
+
+# 파이썬, 주피터 캐시
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

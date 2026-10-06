@@ -1,0 +1,23 @@
+<가상 환경 준비>
+1. anaconda prompt를 여세요
+2. 파일 경로를 지정한 후 setup_environments.bat 을 실행
+C:\workspace\python\project_personal\DTI_project\model\setup_environments.bat
+
+or
+해당 폴더로 이동한 뒤 setup_environments.bat 을 실행
+cd C:\workspace\python\project_personal\DTI_project\model
+setup_environments.bat
+
+
+<모델 실행 방법>
+
+1-1. anaconda Prompt 에서 conda activate "가상공간 이름"
+or
+1-2. pycharm의 터미널에서 실행
+
+2. cd C:\workspace\python\project_personal\DTI_project\model
+(여기는 step3_ot_txgnn_link.py 파일이 있는 장소)
+python step3_ot_txgnn_link.py prepare --auto-chain --smiles "CC1=C(C=C(C=C1)NC(=O)C2=CC=C(C=C2)CN3CCN(CC3)C)NC4=NC=CC(=N4)C5=CN=CC=C5"
+
+# smiles"여기 안에 아무거나 넣어도 됩니다"
+

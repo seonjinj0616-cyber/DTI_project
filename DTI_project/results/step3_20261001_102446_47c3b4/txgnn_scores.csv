@@ -1,0 +1,72 @@
+﻿drug_id,drug_name,role,primekg_x_id,disease_name,relation,score_raw,rank,n_drugs,rank_percentile,known_indication
+DB00398,Sorafenib,query,8170,ovarian cancer,indication,-12.146514892578125,396,7957,0.049767500314188765,False
+DB00398,Sorafenib,query,5070,neoplasm (disease),indication,-4.852051258087158,1107,7957,0.1391227849692095,False
+DB00398,Sorafenib,query,4992,cancer,indication,-5.901970863342285,446,7957,0.056051275606384315,False
+DB00398,Sorafenib,query,7254,breast cancer,indication,-3.1166298389434814,1694,7957,0.21289430689958527,False
+DB00398,Sorafenib,query,11913_7088_11743_12153_7089_11194_12321_15140_4975_11561_11647_11777_12344_12609_12630_12631_14265_10422_14036_14316_100088,Alzheimer disease,indication,-7.508612632751465,850,7957,0.10682417996732436,False
+DB00398,Sorafenib,query,12004_15075_5034_5075_24622_6467,thyroid gland carcinoma,indication,-4.845841884613037,1576,7957,0.19806459721000377,True
+DB00398,Sorafenib,query,11988,neutrophil immunodeficiency syndrome,indication,-4.899083137512207,1528,7957,0.19203217292949604,False
+DB00398,Sorafenib,query,10917_7319_1314,chondrocalcinosis,indication,-10.662338256835938,1112,7957,0.13975116249842906,False
+DB00398,Sorafenib,query,5178_6629_5416_6630_6631_6632,osteoarthritis,indication,-8.627687454223633,1352,7957,0.1699132839009677,False
+DB00398,Sorafenib,query,10438_14166_19533_100245_100243_100244,paroxysmal nocturnal hemoglobinuria,indication,-8.621757507324219,1074,7957,0.13497549327636044,False
+DB00398,Sorafenib,query,19082,bullous pemphigoid,indication,-8.92258071899414,906,7957,0.11386200829458339,False
+DB00398,Sorafenib,query,9296,glycoprotein storage disease,indication,-3.3224775791168213,1722,7957,0.21641322106321478,False
+DB00398,Sorafenib,query,7603,Felty syndrome,indication,-7.434422969818115,820,7957,0.10305391479200704,False
+DB00398,Sorafenib,query,7114,angel-shaped phalango-epiphyseal dysplasia,indication,-6.441152095794678,1428,7957,0.17946462234510493,False
+DB00398,Sorafenib,query,12330,talo-patello-scaphoid osteolysis,indication,-0.14205814898014069,1721,7957,0.21628754555737087,False
+DB00398,Sorafenib,query,18899,posterior cortical atrophy,indication,-5.222073554992676,1173,7957,0.14741736835490762,False
+DB00398,Sorafenib,query,4986,urinary bladder carcinoma,indication,-11.123098373413086,490,7957,0.0615809978635164,False
+DB00398,Sorafenib,query,19087,cholangiocarcinoma,indication,-3.143867015838623,1715,7957,0.2155334925223074,False
+DB00398,Sorafenib,query,2108,thyroid cancer,indication,-4.264862060546875,1646,7957,0.20686188261907754,False
+DB00398,Sorafenib,query,24331,colorectal carcinoma,indication,-10.497673034667969,553,7957,0.0694985547316828,False
+DB00398,Sorafenib,query,8903,lung cancer,indication,-8.568965911865234,1081,7957,0.1358552218172678,False
+DB00398,Sorafenib,query,7256_18902_16216_3243,hepatocellular carcinoma,indication,-11.072643280029297,546,7957,0.06861882619077542,True
+DB00398,Sorafenib,query,4988,breast adenocarcinoma,indication,-3.96683669090271,1560,7957,0.1960537891165012,False
+DB00398,Sorafenib,query,7763,nonpapillary renal cell carcinoma,indication,-7.138564109802246,1462,7957,0.1837375895437979,True
+DB00398,Sorafenib,query,5376_13860,membranous glomerulonephritis,indication,-6.658677101135254,1299,7957,0.1632524820912404,False
+DB00398,Sorafenib,query,8718,Morvan syndrome,indication,-6.359001636505127,1189,7957,0.1494281764484102,False
+DB00398,Sorafenib,query,7361,C1 inhibitor deficiency,indication,-6.543622970581055,799,7957,0.1004147291692849,False
+DB00398,Sorafenib,query,7179,autoimmune disease,indication,-9.487776756286621,565,7957,0.07100666080180973,False
+DB00398,Sorafenib,query,10150_4958_5096_6082_500_514,squamous cell carcinoma,indication,-4.104728698730469,1613,7957,0.20271459092622848,False
+DB00398,Sorafenib,query,5559,neurodegenerative disease,indication,-3.383563280105591,1513,7957,0.19014704034183738,False
+DB00398,Sorafenib,query,18916_19938_15733_15731_15732,anorectal malformation,indication,-7.676602363586426,903,7957,0.11348498177705166,False
+DB00398,Sorafenib,query,7699,Hashimoto thyroiditis,indication,-8.59771728515625,1254,7957,0.15759708432826441,False
+DB00398,Sorafenib,query,8219,pemphigus vulgaris,indication,-7.67786169052124,979,7957,0.12303632022118889,False
+DB00398,Sorafenib,query,5068,myocardial infarction (disease),indication,-11.998526573181152,193,7957,0.024255372627874826,False
+DB00398,Sorafenib,query,5005,clear cell renal carcinoma,indication,-4.192899227142334,1602,7957,0.20133216036194546,True
+DB00398,Sorafenib,query,33622_14365_14366_30844_32859_14961_32744_20851_32739_7161_54723_20852_54726_11720_54730_32863_7060_33673_14970_32845_54725_30938_14847_54724_54615_30846_14172_54732_54729_32686_30868_33671_9776_13505_29147_54728_54731_54727_10052_20855_32896_29148_14037_32748_13504_32898_54733_13070_13901_30926_30989,spermatogenic failure,indication,-8.287673950195312,1095,7957,0.13761467889908258,False
+DB00398,Sorafenib,query,13743,autosomal systemic lupus erythematosus type 16,indication,-11.182659149169922,566,7957,0.07113233630765364,False
+DB00398,Sorafenib,query,18394,male infertility with teratozoospermia due to single gene mutation,indication,-4.308290481567383,1566,7957,0.19680784215156466,False
+DB00398,Sorafenib,query,5105_5012,melanoma,indication,-7.459368705749512,996,7957,0.1251728038205354,False
+DB00398,Sorafenib,query,4983,azoospermia,indication,-4.8663740158081055,1457,7957,0.18310921201457836,False
+DB00398,Sorafenib,query,14393_14797_13278_7919_12765,"lymphedema, hereditary",indication,-5.044483661651611,997,7957,0.12529847932637928,False
+DB00398,Sorafenib,query,13419,complement component C1s deficiency,indication,-7.034657001495361,1033,7957,0.1298227975367601,False
+DB00398,Sorafenib,query,21637,low grade glioma,indication,-6.478041648864746,1263,7957,0.1587281638808596,False
+DB00398,Sorafenib,query,33541_14280_13500_14278_10296_33542_32723_14597_14727_8856_54696_32599_20849_32763_30858_30013_10504_14453_12426_10386_32803_14491_13427_14222_14981_13953_21094_30898_30973_30981,immunodeficiency,indication,-3.9655826091766357,1161,7957,0.14590926228478068,False
+DB00398,Sorafenib,query,13577,Lipedema (disease),indication,-7.089262008666992,1003,7957,0.12605253236144276,False
+DB00398,Sorafenib,query,8558_19098,autoimmune thrombocytopenic,indication,-9.666179656982422,853,7957,0.1072012064848561,False
+DB00398,Sorafenib,query,9842,Pelger-Huet-like anomaly and episodic fever with abdominal pain,indication,-5.06660795211792,727,7957,0.09136609274852331,False
+DB00398,Sorafenib,query,33554,immunodeficiency 73b with defective neutrophil chemotaxis and lymphopenia,indication,-0.3481547236442566,1056,7957,0.13271333417117004,False
+DB00398,Sorafenib,query,19093,immunodeficiency due to selective anti-polysaccharide antibody deficiency,indication,-0.24641764163970947,1097,7957,0.1378660299107704,False
+DB00398,Sorafenib,query,14083_13288_12987_13287_13289_20729_14840_13290_11096_16462_15977,agammaglobulinemia,indication,-8.911904335021973,650,7957,0.08168907879854216,False
+DB00398,Sorafenib,query,5002,chronic obstructive pulmonary disease,indication,-11.688295364379883,427,7957,0.053663440995350004,False
+DB00398,Sorafenib,query,14391,severe combined immunodeficiency due to CTPS1 deficiency,indication,-3.893357753753662,1666,7957,0.20937539273595576,False
+DB00398,Sorafenib,query,15517,common variable immunodeficiency,indication,-9.519340515136719,887,7957,0.11147417368354907,False
+DB00398,Sorafenib,query,14081,severe combined immunodeficiency due to CARD11 deficiency,indication,-8.30887222290039,1197,7957,0.1504335804951615,False
+DB00398,Sorafenib,query,30069,"hyper-IgE recurrent infection syndrome 5, autosomal recessive",indication,-0.15739905834197998,2624,7957,0.3297725273344225,False
+DB00398,Sorafenib,query,32907,lymphatic malformation 8,indication,-3.751803398132324,1630,7957,0.20485107452557497,False
+DB00398,Sorafenib,query,11158_13767_14253_11804_11383_17979,autoimmune lymphoproliferative syndrome,indication,-4.6669511795043945,1570,7957,0.19731054417494032,False
+DB00398,Sorafenib,query,10730,"combined immunodeficiency, X-linked",indication,-4.064095973968506,1587,7957,0.1994470277742868,False
+DB00398,Sorafenib,query,10514,combined immunodeficiency due to moesin deficiency,indication,-5.653900146484375,1468,7957,0.1844916425788614,False
+DB00398,Sorafenib,query,13285_9413_13286_13283_13284_11864_14697_14260_13862_54691,"immunodeficiency, common variable",indication,-12.378104209899902,446,7957,0.056051275606384315,False
+DB00398,Sorafenib,query,8828,camptodactyly-arthropathy-coxa vara-pericarditis syndrome,indication,-7.176768779754639,1258,7957,0.15809978635164007,False
+DB00398,Sorafenib,query,7576,esophageal cancer,indication,-10.110640525817871,1104,7957,0.13874575845167778,False
+DB00398,Sorafenib,query,5494,triple-negative breast carcinoma,indication,-2.378514289855957,1913,7957,0.2404172426794018,False
+DB00398,Sorafenib,query,10030,Sjogren syndrome,indication,-10.992456436157227,707,7957,0.0888525826316451,False
+DB00398,Sorafenib,query,19435,rheumatoid factor-positive polyarticular juvenile idiopathic arthritis,indication,-0.15280064940452576,1211,7957,0.15219303757697625,False
+DB00398,Sorafenib,query,2714,central nervous system cancer,indication,-7.476072311401367,1014,7957,0.1274349629257258,False
+DB00398,Sorafenib,query,5377,nephrotic syndrome,indication,-7.997896194458008,678,7957,0.08520799296217167,False
+DB00398,Sorafenib,query,8227,peripheral dysostosis,indication,-5.690412998199463,1500,7957,0.18851325876586653,False
+DB00398,Sorafenib,query,16262,leiomyosarcoma of the corpus uteri,indication,-4.844870090484619,1346,7957,0.16915923086590423,False
+DB00398,Sorafenib,query,15009,"hydrops fetalis, nonimmune, and/or atrial septal defect, susceptibility to",indication,-4.971968650817871,793,7957,0.09966067613422144,False
+DB00398,Sorafenib,query,5148,type 2 diabetes mellitus,indication,-8.327861785888672,1099,7957,0.1381173809224582,False

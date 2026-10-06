@@ -1,0 +1,37 @@
+{
+  "smiles": "CNC(=O)C1=NC=CC(=C1)OC2=CC=C(C=C2)NC(=O)NC3=CC(=C(C=C3)Cl)C(F)(F)F",
+  "step1_result_csv": "C:\\workspace\\python\\project_personal\\DTI_project\\results\\top100_screening_CNC__O_C1_NC_CC__C1_OC2_CC_C_C_C2_NC__O__20261001_102202.csv",
+  "step1_skipped": false,
+  "original_csv": "C:\\workspace\\python\\project_personal\\DTI_project\\data\\esm2_human_whole_protein_vecterDB\\esm2_ready_dataset_cropped_final.csv",
+  "checkpoint": "C:\\workspace\\python\\project_personal\\DTI_project\\model\\model\\step2_c2p_crossattn_ic50.pt",
+  "architecture": "c2p_v1",
+  "task_names": [
+    "ic50"
+  ],
+  "rank_tasks": [
+    "ic50"
+  ],
+  "top_n": 20,
+  "final_n": 5,
+  "peak_window": 15,
+  "peak_method": "window_enrichment",
+  "detail_scope": "final",
+  "final_ids": [
+    "Q8TF76_Q301L",
+    "WT_Q15722",
+    "WT_Q9NV96",
+    "WT_O43193",
+    "WT_Q9NPC1"
+  ],
+  "ablation_window": 11,
+  "ablation_stride": 5,
+  "site_weights": {
+    "attention": 1.0,
+    "gradient": 1.0,
+    "ablation": 1.0
+  },
+  "smooth_window": 5,
+  "site_top_fraction": 0.1,
+  "site_merge_gap": 2,
+  "site_min_length": 3
+}

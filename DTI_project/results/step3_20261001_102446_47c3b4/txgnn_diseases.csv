@@ -1,0 +1,72 @@
+﻿ot_disease_id,ot_disease_name,primekg_x_id,primekg_x_index,primekg_name,map_method,is_broader
+MONDO_0008170,ovarian cancer,8170,31477,ovarian cancer,mondo_direct,False
+EFO_0000616,neoplasm,5070,33672,neoplasm (disease),mondo_xref,False
+MONDO_0004992,cancer,4992,35612,cancer,mondo_direct,False
+MONDO_0007254,breast cancer,7254,36691,breast cancer,mondo_direct,False
+MONDO_0004975,Alzheimer disease,11913_7088_11743_12153_7089_11194_12321_15140_4975_11561_11647_11777_12344_12609_12630_12631_14265_10422_14036_14316_100088,28780,Alzheimer disease,mondo_direct,False
+MONDO_0024622,thyroid gland adenocarcinoma,12004_15075_5034_5075_24622_6467,30749,thyroid gland carcinoma,mondo_direct,False
+MONDO_0011988,neutrophil immunodeficiency syndrome,11988,32147,neutrophil immunodeficiency syndrome,mondo_direct,False
+MONDO_0007319,chondrocalcinosis 2,10917_7319_1314,29715,chondrocalcinosis,mondo_direct,False
+MONDO_0005178,osteoarthritis,5178_6629_5416_6630_6631_6632,33609,osteoarthritis,mondo_direct,False
+MONDO_0100244,paroxysmal nocturnal hemoglobinuria,10438_14166_19533_100245_100243_100244,27950,paroxysmal nocturnal hemoglobinuria,mondo_direct,False
+EFO_0007187,bullous pemphigoid,19082,33194,bullous pemphigoid,mondo_xref,False
+MONDO_0009296,glycoprotein storage disease,9296,30301,glycoprotein storage disease,mondo_direct,False
+EFO_0007269,Felty's syndrome,7603,30061,Felty syndrome,mondo_xref,False
+MONDO_0007114,Angel-shaped phalango-epiphyseal dysplasia,7114,28746,angel-shaped phalango-epiphyseal dysplasia,mondo_direct,False
+MONDO_0012330,talo-patello-scaphoid osteolysis,12330,27572,talo-patello-scaphoid osteolysis,mondo_direct,False
+MONDO_0018899,posterior cortical atrophy,18899,32407,posterior cortical atrophy,mondo_direct,False
+MONDO_0004986,urinary bladder carcinoma,4986,33642,urinary bladder carcinoma,mondo_direct,False
+EFO_0005221,cholangiocarcinoma,19087,33045,cholangiocarcinoma,mondo_xref,False
+MONDO_0002108,thyroid cancer,2108,36944,thyroid cancer,mondo_direct,False
+EFO_1001951,colorectal carcinoma,24331,36480,colorectal carcinoma,mondo_xref,False
+MONDO_0008903,lung cancer,8903,31116,lung cancer,mondo_direct,False
+EFO_0000182,hepatocellular carcinoma,7256_18902_16216_3243,29646,hepatocellular carcinoma,mondo_xref,False
+EFO_0000304,breast adenocarcinoma,4988,35737,breast adenocarcinoma,mondo_xref,False
+MONDO_0007763,nonpapillary renal cell carcinoma,7763,28640,nonpapillary renal cell carcinoma,mondo_direct,False
+MONDO_0013860,idiopathic membranous glomerulonephritis,5376_13860,94687,membranous glomerulonephritis,mondo_direct,False
+EFO_1001897,Morvan syndrome,8718,97658,Morvan syndrome,mondo_xref,False
+MONDO_0007361,C1 inhibitor deficiency,7361,31159,C1 inhibitor deficiency,mondo_direct,False
+EFO_0005140,autoimmune disease,7179,28478,autoimmune disease,name_exact,False
+EFO_0000181,head and neck squamous cell carcinoma,10150_4958_5096_6082_500_514,29375,squamous cell carcinoma,mondo_xref,False
+EFO_0005772,neurodegenerative disease,5559,35693,neurodegenerative disease,mondo_xref,False
+MONDO_0019938,anorectal malformation,18916_19938_15733_15731_15732,33308,anorectal malformation,mondo_direct,False
+EFO_0003779,Hashimoto's thyroiditis,7699,29894,Hashimoto thyroiditis,mondo_xref,False
+EFO_0004719,pemphigus vulgaris,8219,30998,pemphigus vulgaris,mondo_xref,False
+EFO_0000612,myocardial infarction,5068,37180,myocardial infarction (disease),mondo_xref,False
+EFO_0000349,clear cell renal carcinoma,5005,36937,clear cell renal carcinoma,mondo_xref,False
+MONDO_0013504,spermatogenic failure 8,33622_14365_14366_30844_32859_14961_32744_20851_32739_7161_54723_20852_54726_11720_54730_32863_7060_33673_14970_32845_54725_30938_14847_54724_54615_30846_14172_54732_54729_32686_30868_33671_9776_13505_29147_54728_54731_54727_10052_20855_32896_29148_14037_32748_13504_32898_54733_13070_13901_30926_30989,27218,spermatogenic failure,mondo_direct,False
+MONDO_0013743,autosomal systemic lupus erythematosus type 16,13743,29221,autosomal systemic lupus erythematosus type 16,mondo_direct,False
+MONDO_0018394,male infertility with teratozoospermia due to single gene mutation,18394,32368,male infertility with teratozoospermia due to single gene mutation,mondo_direct,False
+EFO_0000756,melanoma,5105_5012,33653,melanoma,mondo_xref,False
+EFO_0000279,azoospermia,4983,38125,azoospermia,mondo_xref,False
+MONDO_0013278,lymphatic malformation 3,14393_14797_13278_7919_12765,28839,"lymphedema, hereditary",mondo_direct,False
+MONDO_0013419,complement component C1s deficiency,13419,30809,complement component C1s deficiency,mondo_direct,False
+MONDO_0021637,low grade glioma,21637,36713,low grade glioma,mondo_direct,False
+MONDO_0014278,immunodeficiency 18,33541_14280_13500_14278_10296_33542_32723_14597_14727_8856_54696_32599_20849_32763_30858_30013_10504_14453_12426_10386_32803_14491_13427_14222_14981_13953_21094_30898_30973_30981,27227,immunodeficiency,mondo_direct,False
+MONDO_0013577,Lipedema,13577,27911,Lipedema (disease),mondo_direct,False
+EFO_0007160,autoimmune thrombocytopenic purpura,8558_19098,31511,autoimmune thrombocytopenic,mondo_xref,False
+MONDO_0009842,Pelger-Huet-like anomaly and episodic fever with abdominal pain,9842,30817,Pelger-Huet-like anomaly and episodic fever with abdominal pain,mondo_direct,False
+MONDO_0033554,immunodeficiency 73b with defective neutrophil chemotaxis and lymphopenia,33554,31520,immunodeficiency 73b with defective neutrophil chemotaxis and lymphopenia,mondo_direct,False
+MONDO_0019093,immunodeficiency due to selective anti-polysaccharide antibody deficiency,19093,27759,immunodeficiency due to selective anti-polysaccharide antibody deficiency,mondo_direct,False
+MONDO_0016462,isolated agammaglobulinemia,14083_13288_12987_13287_13289_20729_14840_13290_11096_16462_15977,27170,agammaglobulinemia,mondo_direct,False
+EFO_0000341,chronic obstructive pulmonary disease,5002,37617,chronic obstructive pulmonary disease,mondo_xref,False
+MONDO_0014391,severe combined immunodeficiency due to CTPS1 deficiency,14391,28620,severe combined immunodeficiency due to CTPS1 deficiency,mondo_direct,False
+MONDO_0015517,common variable immunodeficiency,15517,32587,common variable immunodeficiency,mondo_direct,False
+MONDO_0014081,severe combined immunodeficiency due to CARD11 deficiency,14081,30920,severe combined immunodeficiency due to CARD11 deficiency,mondo_direct,False
+MONDO_0030069,"hyper-IgE recurrent infection syndrome 5, autosomal recessive",30069,32077,"hyper-IgE recurrent infection syndrome 5, autosomal recessive",mondo_direct,False
+MONDO_0032907,lymphatic malformation 8,32907,30834,lymphatic malformation 8,mondo_direct,False
+MONDO_0011804,autoimmune lymphoproliferative syndrome type 2B,11158_13767_14253_11804_11383_17979,28015,autoimmune lymphoproliferative syndrome,mondo_direct,False
+EFO_1001451,X-Linked Combined Immunodeficiency Diseases,10730,27595,"combined immunodeficiency, X-linked",mondo_xref,False
+MONDO_0010514,combined immunodeficiency due to moesin deficiency,10514,31916,combined immunodeficiency due to moesin deficiency,mondo_direct,False
+MONDO_0013284,"immunodeficiency, common variable, 4",13285_9413_13286_13283_13284_11864_14697_14260_13862_54691,27188,"immunodeficiency, common variable",mondo_direct,False
+EFO_0009028,Camptodactyly-arthropathy-coxa-vara-pericarditis syndrome,8828,31821,camptodactyly-arthropathy-coxa vara-pericarditis syndrome,mondo_xref,False
+MONDO_0007576,esophageal cancer,7576,29402,esophageal cancer,mondo_direct,False
+EFO_0005537,triple-negative breast cancer,5494,37655,triple-negative breast carcinoma,mondo_xref,False
+EFO_0000699,Sjogren syndrome,10030,28764,Sjogren syndrome,mondo_xref,False
+EFO_0009731,"polyarticular juvenile idiopathic arthritis, rheumatoid factor positive",19435,32726,rheumatoid factor-positive polyarticular juvenile idiopathic arthritis,mondo_xref,False
+EFO_0000326,central nervous system cancer,2714,35788,central nervous system cancer,mondo_xref,False
+EFO_0004255,nephrotic syndrome,5377,36604,nephrotic syndrome,mondo_xref,False
+MONDO_0008227,peripheral dysostosis,8227,30386,peripheral dysostosis,mondo_direct,False
+EFO_1001974,uterine leiomyosarcoma,16262,37241,leiomyosarcoma of the corpus uteri,mondo_xref,False
+MONDO_0015009,lymphatic malformation 7,15009,29509,"hydrops fetalis, nonimmune, and/or atrial septal defect, susceptibility to",mondo_direct,False
+MONDO_0005148,type 2 diabetes mellitus,5148,28208,type 2 diabetes mellitus,mondo_direct,False

@@ -1,0 +1,6 @@
+﻿target_id,gene_symbol,known_side_effects,possible_side_effects,summary
+ENSG00000102539,MLNR,,,MLNR: 이 타깃에 대해 알려진 안전성 정보가 없습니다 (target.safetyLiabilities / openfda_significant_adverse_target_reactions 모두 참고).
+ENSG00000112697,CDC50A,,,CDC50A: 이 타깃에 대해 알려진 안전성 정보가 없습니다 (target.safetyLiabilities / openfda_significant_adverse_target_reactions 모두 참고).
+ENSG00000177602,HASPIN,,,HASPIN: 이 타깃에 대해 알려진 안전성 정보가 없습니다 (target.safetyLiabilities / openfda_significant_adverse_target_reactions 모두 참고).
+ENSG00000213903,LTB4R,receptor binding,,"LTB4R: 알려진 부작용은 'receptor binding'이고(target.safetyLiabilities 참고), 그 외 통계적으로 유의미한 부작용 신호는 없습니다(openfda_significant_adverse_target_reactions 참고)."
+ENSG00000213906,LTB4R2,,,LTB4R2: 이 타깃에 대해 알려진 안전성 정보가 없습니다 (target.safetyLiabilities / openfda_significant_adverse_target_reactions 모두 참고).

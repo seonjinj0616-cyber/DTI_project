@@ -1,0 +1,15 @@
+{
+  "analysis_id": "47c3b48c-fc1c-405b-bdc9-2598d28f4e72",
+  "smiles": "CNC(=O)C1=NC=CC(=C1)OC2=CC=C(C=C2)NC(=O)NC3=CC(=C(C=C3)Cl)C(F)(F)F",
+  "final_csv": "C:\\workspace\\python\\project_personal\\DTI_project\\results\\stage2_20261001_102435\\final5_proteins.csv",
+  "compound_name": "Sorafenib",
+  "query_drug_status": "pubchem_drugbank_id",
+  "query_drug_id": "DB00398",
+  "ot_db": "C:\\workspace\\python\\project_personal\\DTI_project\\data\\open_target_dataDB\\cdss_integrated.db",
+  "primekg": "C:\\workspace\\python\\project_personal\\DTI_project\\data\\primekg\\kg.csv",
+  "min_score": 0.4,
+  "per_target_top_k": 50,
+  "max_candidates": 300,
+  "allow_ancestor": false,
+  "n_known_side_effects": 89
+}
