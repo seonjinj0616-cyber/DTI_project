@@ -98,7 +98,31 @@ python step3_ot_txgnn_link.py prepare --auto-chain --smiles "CC1=C(C=C(C=C1)NC(=
 
 `--auto-chain` 을 주면 2단계 결과가 없을 때 1, 2단계부터 자동으로 실행합니다. 이어서 `DTI_txgnn` 환경으로 자동 전환해 TxGNN 점수를 계산하고 `finalize` 까지 마칩니다. 결과를 `cdss_integrated.db` 에도 저장하려면 `--write-db` 를 추가하세요.
 
+> **주의:** `results/` 에 예전 `final5_proteins.csv` 가 하나라도 있으면, 새 SMILES 를 넣어도 1, 2단계를 건너뛰고 가장 최근 결과를 그대로 씁니다. 다른 화합물을 분석할 때는 아래 "4. 웹 화면으로 실행하기" 를 쓰거나, "단계별 실행" 처럼 2단계를 먼저 돌린 뒤 `--final-csv` 로 새 결과를 지정하세요.
+
 첫 실행 때 Hugging Face 에서 `ibm-research/MoLFormer-XL-both-10pct` 를 내려받으므로 인터넷 연결이 필요합니다. 3단계는 UniProt 과 PubChem API 도 호출하며, 응답은 `results/` 아래에 캐시됩니다.
+
+### 4. 웹 화면으로 실행하기
+
+브라우저에서 SMILES 를 넣고 1~3단계를 실행한 뒤, 결과를 화면으로 볼 수 있습니다. 내 PC 에서만 접속되는 작은 서버(`ui/server.py`)를 켜 두고 브라우저로 접속하는 방식입니다. 서버는 Python 기본 모듈만 쓰므로 따로 설치할 패키지는 없습니다.
+
+```bat
+conda activate p_proj
+cd DTI_project
+python ui\server.py
+```
+
+1. 터미널에 `DTI 서버 실행 중: http://localhost:8000` 이 뜨면 브라우저에서 `http://localhost:8000` 으로 접속합니다. 터미널 창은 쓰는 동안 계속 켜 둡니다.
+2. 왼쪽 **＋ 새 분석** 에서 SMILES 를 넣고 **분석 실행** 을 누릅니다. 화합물 이름, DrugBank ID, `top-n`, `final-n`, `peak-method`, `proxy-if-missing`, `write-db` 는 선택 사항입니다.
+3. 단계별 진행 상황과 로그가 실시간으로 표시됩니다. 한 번에 수 분에서 수십 분 걸리며, 브라우저를 닫아도 분석은 서버에서 계속됩니다. **중단** 을 누르면 TxGNN 까지 함께 멈춥니다.
+4. 끝나면 결과가 자동으로 열립니다. **개요**, **① 스크리닝**, **② 재랭킹**(attention 프로필, 결합 부위), **③ 적응증**, **④ 안전성** 화면에서 볼 수 있고, 지난 실행은 화면 위쪽 목록에서 고릅니다.
+5. 다 쓰면 서버 터미널에서 `Ctrl+C` 로 끕니다.
+
+서버는 2단계를 먼저 실행하고, 새로 생긴 `final5_proteins.csv` 를 `--final-csv` 로 넘겨 3단계를 실행합니다. 그래서 위 주의 사항의 문제가 생기지 않습니다. 분석은 한 번에 하나만 실행됩니다. 포트를 바꾸려면 `python ui\server.py --port 8080` 처럼 실행하세요.
+
+**결과만 볼 때**는 서버 없이 `DTI_project\ui\index.html` 을 더블클릭해 열고, 오른쪽 위 **results 폴더 열기** 로 `DTI_project\results` 폴더를 고르면 됩니다. 이때는 분석 실행 버튼이 없습니다. 브라우저가 "업로드" 확인 창을 띄우지만 파일은 브라우저 안에서만 읽습니다.
+
+화면의 그래프와 CSV 라이브러리를 인터넷(CDN)에서 불러오므로, 화면을 열 때 인터넷 연결이 필요합니다.
 
 ## 단계별 실행
 
@@ -155,6 +179,7 @@ DTI_project/
 │   ├── script/               2단계 모델 정의와 site 비교 코드
 │   ├── DTI_txgnn_conda_python_3_11/   TxGNN 점수 계산 (DTI_txgnn 환경)
 │   └── setup_environments.bat
+├── ui/                       웹 화면 (server.py: 실행 서버, index.html: 입력·결과 화면)
 ├── scripts/                  데이터 준비와 모델 학습 (아래 순서대로 한 번 실행)
 ├── data/                     데이터 (GitHub 에는 코드 파일만 포함, 아래 "데이터 준비" 참고)
 ├── results/                  파이프라인 결과와 API 캐시
