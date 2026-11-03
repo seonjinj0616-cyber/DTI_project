@@ -118,6 +118,8 @@ PER_TARGET_TOP_K = 50             # 타깃당 상위 몇 개 질병까지 후보
 MAX_CANDIDATES = 300              # TxGNN 으로 점수를 낼 질병 후보 최대 개수 (0 = 제한 없음)
 
 DRUGBANK_RE = re.compile(r"^DB\d{5}$")
+# PubChem 동의어 앞의 입체 표기 (소문자 기준): (e,z)-, (e/z)-, (z)-, (r)-, (+)-, (±)-, (rs)-, trans-, cis-, rac-, dl-
+STEREO_PREFIX_RE = re.compile(r"^(?:\((?:[ezrs]|[ezrs][,/][ezrs]|[+-]|±|rs|rac)\)-|(?:cis|trans|rac|dl)-)")
 
 
 # ============================================================
@@ -993,6 +995,12 @@ def resolve_query_drug(prime_drug, smiles=None, drug_id=None, drug_name=None, sy
             for s in synonyms:
                 if s.lower() in by_name:
                     return result(by_name[s.lower()], "pubchem_name", s)
+            # 입체 정보가 없는 SMILES 는 '(E,Z)-Tamoxifen' 처럼 입체 표기가 붙은 PubChem 항목으로 연결되므로,
+            # 앞의 입체 표기를 떼고 한 번 더 비교한다
+            for s in synonyms:
+                n = STEREO_PREFIX_RE.sub("", s.lower())
+                if n != s.lower() and n in by_name:
+                    return result(by_name[n], "pubchem_name_stereo_stripped", s)
             return {"found": False, "status": "pubchem_synonyms_not_in_primekg", "matched_via": None}
 
         return {"found": False, "status": "pubchem_unavailable(%s)" % fetch_status, "matched_via": None}

@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTI 결과 뷰어</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #667085; --line: #e3e6eb;
+  --accent: #2f6fde; --accent-soft: #e6eefc; --peak: #f2a33a; --peak-soft: #fdf0dc;
+  --site: #d6455d; --site-soft: #fbe4e8; --ok: #1f9d6b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171c; --panel: #1c2027; --text: #e6e9ef; --muted: #98a2b3; --line: #2c323c;
+    --accent: #6c9cff; --accent-soft: #23314d; --peak: #f5b65c; --peak-soft: #3e3220;
+    --site: #ff7a8f; --site-soft: #43252b; --ok: #43c993;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+header { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center;
+  padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+header h1 { font-size: 16px; margin: 0; }
+header .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 13px; }
+header .meta b { color: var(--text); font-weight: 600; }
+.smiles { font-family: Consolas, monospace; max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+header .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+select, input, button { font: inherit; color: var(--text); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+button { cursor: pointer; }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.layout { display: flex; min-height: calc(100vh - 58px); }
+nav { width: 170px; flex-shrink: 0; padding: 16px 10px; border-right: 1px solid var(--line); background: var(--panel); }
+nav a { display: block; padding: 8px 10px; border-radius: 6px; color: var(--text); text-decoration: none; margin-bottom: 2px; }
+nav a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav a.disabled { color: var(--muted); pointer-events: none; opacity: .5; }
+main { flex: 1; min-width: 0; padding: 20px; }
+section { display: none; }
+section.active { display: block; }
+h2 { font-size: 18px; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.card h3 { font-size: 14px; margin: 0 0 10px; }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.tcard { border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; }
+.tcard:hover { border-color: var(--accent); }
+.tcard .g { font-weight: 700; font-size: 15px; }
+.tcard .s { color: var(--muted); font-size: 12px; }
+.badge { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
+.badge.mut { background: var(--site-soft); color: var(--site); }
+.badge.proxy { background: var(--peak-soft); color: var(--peak); }
+.funnel { display: flex; flex-direction: column; gap: 6px; }
+.funnel div { background: var(--accent); color: #fff; padding: 6px 12px; border-radius: 6px; }
+#topDiseases { overflow-x: auto; }
+.tablewrap { overflow: auto; max-height: 520px; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--panel); cursor: pointer; user-select: none; z-index: 1; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; min-width: 220px; }
+tr.click { cursor: pointer; }
+tr.click:hover td, tr.sel td { background: var(--accent-soft); }
+tr.final td:first-child { box-shadow: inset 3px 0 var(--ok); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.toolbar .count { color: var(--muted); font-size: 12px; margin-left: auto; }
+.chartbox { position: relative; height: 280px; }
+.seq { font-family: Consolas, monospace; font-size: 12px; line-height: 1.9; word-break: break-all; }
+.seq span.pk { background: var(--peak-soft); }
+.seq span.st { background: var(--site-soft); color: var(--site); font-weight: 700; }
+.seq .idx { color: var(--muted); display: inline-block; width: 44px; text-align: right; margin-right: 8px; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { border: 1px solid var(--line); border-radius: 12px; padding: 2px 10px; font-size: 12px; }
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty h2 { color: var(--text); }
+pre { background: var(--bg); padding: 12px; border-radius: 8px; overflow: auto; font-size: 12px; }
+.form { display: grid; gap: 10px 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.form label.chk { flex-direction: row; align-items: center; gap: 6px; color: var(--text); font-size: 13px; }
+.form .full { grid-column: 1 / -1; }
+.form .opt p { margin: 2px 0 0 22px; }
+.note { font-size: 12px; color: var(--muted); }
+summary { cursor: pointer; }
+.help p, .colhelp ul { margin: 0 0 8px; }
+.help ul, .colhelp ul { margin: 0 0 8px; padding-left: 20px; }
+.help li, .colhelp li { margin-bottom: 4px; }
+.colhelp { margin-bottom: 10px; font-size: 13px; }
+.bars { display: grid; grid-template-columns: 36px minmax(140px, 1.3fr) 1fr 1fr; gap: 8px 14px; align-items: center; font-size: 13px; }
+.bars .h { font-size: 12px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.bars .r { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { display: flex; align-items: center; gap: 8px; }
+.bar > div { flex: 1; height: 14px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.bar.tx i { background: var(--ok); }
+.bar span { min-width: 74px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 760px) { .bars { grid-template-columns: 28px 1fr; } .bars .h:nth-child(n+3) { display: none; } .bars .bar, .bars > .note { grid-column: 2; } }
+.pcard { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.pcard .g { font-weight: 700; font-size: 15px; }
+.pcard .s { color: var(--muted); font-size: 12px; }
+.pcard .fn { margin: 8px 0; font-size: 13px; cursor: pointer; }
+.pcard .fn.clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.pcard .chips span { font-size: 11px; }
+pre.log { max-height: 360px; white-space: pre-wrap; word-break: break-all; }
+.stages { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.stages span { border: 1px solid var(--line); border-radius: 14px; padding: 3px 12px; font-size: 13px; color: var(--muted); }
+.stages span.now { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.stages span.done { border-color: var(--ok); color: var(--ok); }
+.stages span.bad { border-color: var(--site); color: var(--site); font-weight: 600; }
+@media (max-width: 760px) {
+  .layout { flex-direction: column; }
+  nav { width: auto; display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 6px 16px; }
+  nav a { white-space: nowrap; }
+  main { padding: 16px; }
+  header .right { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>DTI 결과 뷰어</h1>
+  <div class="meta" id="runMeta"></div>
+  <div class="right">
+    <select id="runSelect" hidden></select>
+    <label id="folderBtn"><input type="file" id="folderInput" webkitdirectory hidden>
+      <button class="primary" onclick="document.getElementById('folderInput').click()">results 폴더 열기</button></label>
+  </div>
+</header>
+
+<div class="layout">
+  <nav id="nav">
+    <a href="#" data-view="command">＋ 새 분석</a>
+    <a href="#" data-view="overview" class="active">개요</a>
+    <a href="#" data-view="step1">① 스크리닝</a>
+    <a href="#" data-view="step2">② 재랭킹</a>
+    <a href="#" data-view="step3">③ 적응증</a>
+    <a href="#" data-view="safety">④ 안전성</a>
+  </nav>
+  <main>
+    <section id="view-overview" class="active">
+      <div class="empty" id="emptyState">
+        <h2>결과 폴더를 선택하세요</h2>
+        <p>오른쪽 위 <b>results 폴더 열기</b>로 <code>DTI_project/results</code> 폴더를 고르면<br>
+          step3 실행 하나를 기준으로 1~3단계 결과를 이어서 보여줍니다.</p>
+        <p class="note">파일은 브라우저 안에서만 읽고, 어디로도 전송하지 않습니다.</p>
+      </div>
+      <div id="overviewBody" hidden>
+        <h2>개요</h2><p class="sub" id="overviewSub"></p>
+        <div class="grid" style="grid-template-columns: minmax(220px, 1fr) 2fr;">
+          <div class="card"><h3>단백질 선별 흐름</h3><div class="funnel" id="funnel"></div></div>
+          <div class="card"><h3>상위 질병 후보</h3><div id="topDiseases"></div></div>
+        </div>
+        <div class="card"><h3>최종 표적</h3><div class="grid" id="finalCards"></div></div>
+      </div>
+    </section>
+
+    <section id="view-step1">
+      <h2>① 스크리닝 Top100</h2>
+      <p class="sub">MoLFormer + Ki/Kd 분류 모델로 인간 단백질 전체에서 고른 고유 UniProt Top100</p>
+      <div class="card help">
+        <p><b>Ki 확률 · Kd 확률</b>은 입력 화합물이 이 단백질에 <b>강하게 결합할 확률</b>을 모델이 예측한 값(0~1)입니다.
+          학습 때 결합 상수가 <b>pKi(또는 pKd) ≥ 7</b>, 즉 <b>Ki(또는 Kd) ≤ 100 nM</b> 인 화합물-단백질 쌍을 "결합함"으로 두고 분류했습니다.</p>
+        <p>두 값은 같은 모델의 두 출력(멀티태스크)이며, 서로 다른 실험 데이터(ChEMBL·BindingDB 의 Ki, Kd 측정값)로 학습했습니다.</p>
+        <p class="note">선별 방법: 인간 단백질 약 11.3만 개(정상 서열 + 변이 서열) 중 Ki 확률 ≥ 0.5 인 것을 Ki 확률 순으로 최대 1000개 모으고,
+          그 안에서 Kd 확률 ≥ 0.5 인 것을 Kd 확률 순으로 훑으며 같은 UniProt 은 하나만 남겨 100개를 고릅니다.
+          확률은 순위를 매기기 위한 모델 점수이므로 실제 결합 여부는 실험으로 확인해야 합니다.</p>
+      </div>
+      <div class="card"><div id="step1Table"></div></div>
+    </section>
+
+    <section id="view-step2">
+      <h2>② 재랭킹과 결합 부위</h2>
+      <p class="sub">IC50 회귀로 Top20 재랭킹, attention peak 로 최종 표적 선택. 행을 누르면 attention 프로필을 봅니다.</p>
+      <div class="card"><h3>최종 표적 단백질</h3>
+        <p class="note">단백질 이름, 기능, 분류는 UniProt 에서 실시간으로 불러온 내용입니다(영문). 기능 설명을 누르면 전체가 펼쳐집니다.</p>
+        <div class="grid" id="finalDesc" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div></div>
+      <div class="card"><div id="step2Table"></div></div>
+      <div class="card" id="attnCard" hidden>
+        <h3 id="attnTitle"></h3>
+        <div id="attnDesc" style="margin-bottom:12px"></div>
+        <div class="chartbox"><canvas id="attnChart"></canvas></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>attention</span>
+          <span><i style="background:var(--peak)"></i>peak 구간</span>
+          <span><i style="background:var(--site)"></i>결합 부위 후보(detail_sites)</span></div>
+        <h3 style="margin-top:16px">서열</h3>
+        <div class="seq" id="seqView"></div>
+        <div id="siteTable" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <section id="view-step3">
+      <h2>③ 적응증 후보</h2>
+      <p class="sub">Open Targets 질병 근거 + PrimeKG 매핑 + TxGNN 점수</p>
+      <div class="card help">
+        <p>최종 표적 단백질과 연결된 질병을 <b>두 가지 독립된 근거</b>로 평가합니다.</p>
+        <ul>
+          <li><b>Open Targets 근거 점수 (OT)</b>: "이 <u>표적 단백질</u>이 이 질병과 관련 있다"는 근거의 세기(0~1)입니다.
+            유전학, 문헌, 동물 모델 등 근거 중 가장 높은 점수이며, 0.4 이상인 것만 후보로 남깁니다. 약물이 아니라 표적 기준의 점수입니다.</li>
+          <li><b>TxGNN 상위 %</b>: 의학 지식 그래프(PrimeKG)로 학습한 TxGNN 이 "<u>입력 약물</u>이 이 질병의 치료제일 가능성"을
+            전체 질병 약 8천 개 중 몇 등으로 예측했는지를 백분율로 나타낸 값입니다. <b>작을수록 상위</b>(예: 2.4 = 상위 2.4%)입니다.</li>
+        </ul>
+      </div>
+      <div class="card"><h3>상위 20개 질병 후보</h3>
+        <p class="note">표의 순위(TxGNN 순위가 높은 순)대로 20개만 보여줍니다. 두 막대 모두 <b>길수록 근거가 강합니다.</b>
+          두 막대가 모두 긴 질병이 먼저 살펴볼 후보입니다.</p>
+        <div class="bars" id="topBars"></div>
+        <p class="note" id="barsNote" style="margin-top:10px"></p></div>
+      <div class="card">
+        <details class="colhelp"><summary>표의 열 설명</summary>
+          <ul>
+            <li><b>표적</b>: 이 질병과 연결된 최종 표적 유전자. 여러 개면 여러 표적이 같은 질병을 가리킨다는 뜻입니다.</li>
+            <li><b>OT 최대 / 평균</b>: 표적-질병 근거 점수의 최댓값과 평균(표적이 여러 개일 때).</li>
+            <li><b>TxGNN 순위 / 상위%</b>: 입력 약물에 대한 TxGNN 적응증 예측 순위. 비어 있으면 질병을 PrimeKG 에 매핑하지 못한 경우입니다.</li>
+            <li><b>점수 출처</b>: <code>query</code> 는 입력 약물 자체의 점수, <code>proxy</code> 는 입력 약물이 PrimeKG 에 없어 같은 표적을 가진 다른 약물(괄호 안)로 대신 계산한 점수입니다.</li>
+            <li><b>KG 기존</b>: <code>yes</code> 면 이 약물-질병 적응증이 이미 PrimeKG 에 알려져 있다는 뜻(새 발견이 아님)입니다.</li>
+            <li><b>근거 유형</b>: Open Targets 근거 종류. 예: literature(문헌), genetic_association(유전 연관), animal_model(동물 모델), known_drug(기존 약물).</li>
+            <li><b>관련 경로</b>: 표적이 참여하는 Reactome 경로 중 이 질병과 연결된 것.</li>
+          </ul>
+        </details>
+        <div id="step3Table"></div></div>
+    </section>
+
+    <section id="view-safety">
+      <h2>④ 안전성 · 경로</h2>
+      <p class="sub">참고용 정보입니다. 표적별 안전성 근거와 Reactome 경로, 입력 약물의 알려진 부작용</p>
+      <div class="grid" id="safetyCards" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));"></div>
+      <div class="card"><h3 id="seTitle">알려진 부작용</h3><div class="chips" id="seChips"></div></div>
+    </section>
+
+    <section id="view-command">
+      <h2>＋ 새 분석</h2>
+      <p class="sub" id="cmdSub"></p>
+      <div class="card">
+        <div class="form">
+          <label class="full">SMILES<input id="c_smiles" placeholder="예: CC1=C(C=C(C=C1)NC(=O)..."></label>
+          <label>약물 이름 (선택, 영문)<input id="c_name" placeholder="예: Imatinib"></label>
+          <label>--top-n (기본 20)<input id="c_topn" type="number" min="1" placeholder="20"></label>
+          <label>--final-n (기본 5)<input id="c_finaln" type="number" min="1" placeholder="5"></label>
+          <label>--peak-method
+            <select id="c_peak">
+              <option value="">window_enrichment (기본)</option>
+              <option>window_mass</option><option>zscore</option><option>entropy</option>
+            </select></label>
+          <label>--drug-id (DrugBank)<input id="c_drugid" placeholder="예: DB00398"></label>
+          <p class="note full" style="margin:0">약물 이름과 DrugBank ID 는 비워 두어도 SMILES 로 PubChem 을 조회해 PrimeKG 약물을 자동으로 찾습니다.
+            자동으로 못 찾았다는 안내가 나오면 그때 <b>약물 이름</b>(PrimeKG 이름과 같게, 영문)이나 <b>DrugBank ID</b> 를 넣어 다시 실행하세요.</p>
+          <div class="full opt">
+            <label class="chk"><input type="checkbox" id="c_proxy"> --proxy-if-missing (대리 약물 사용)</label>
+            <p class="note">입력 약물이 PrimeKG 지식 그래프에 없으면(신규 화합물 등) TxGNN 점수를 낼 수 없습니다.
+              체크하면 이때만 최종 표적을 표적으로 하는 기존 약물을 최대 20개 골라 대신 점수를 계산하고, 결과에 <code>proxy</code> 로 표시합니다.
+              입력 화합물 자체의 점수가 아니라 참고용입니다. 적응증 화면에 "TxGNN 점수 없음"이 나올 때 체크하고 다시 실행하세요.</p>
+          </div>
+          <div class="full opt">
+            <label class="chk"><input type="checkbox" id="c_writedb"> --write-db (DB 에 저장)</label>
+            <p class="note">결과는 항상 <code>results/</code> 폴더에 CSV 로 저장됩니다. 체크하면 같은 결과를
+              <code>data/open_target_dataDB/cdss_integrated.db</code> 의 <code>analysis_history</code>, <code>step3_indication_results</code> 테이블에도 저장합니다.
+              다른 프로그램이 DB 에서 결과를 읽어야 할 때만 체크하면 되고, 화면으로 보는 데는 필요 없습니다.</p>
+          </div>
+        </div>
+        <div class="toolbar" id="runBar" style="margin:14px 0 0" hidden>
+          <button class="primary" id="runBtn">분석 실행</button>
+          <span class="note" id="runMsg"></span>
+        </div>
+      </div>
+      <div class="card" id="jobCard" hidden>
+        <h3 id="jobTitle"></h3>
+        <div class="stages" id="jobStages"></div>
+        <pre id="jobLog" class="log"></pre>
+        <div class="toolbar"><button id="cancelBtn">중단</button><button id="openResultBtn" class="primary" hidden>결과 보기</button>
+          <span class="note" id="jobMsg"></span></div>
+      </div>
+      <details class="card" id="cmdCard">
+        <summary><b>터미널에서 실행하는 방법</b></summary>
+        <p class="note">서버 없이 터미널에서 직접 분석할 때 쓰는 명령어입니다. 위 입력칸의 값이 그대로 반영됩니다.</p>
+        <ol class="note">
+          <li>첫 두 줄로 1·2단계용 conda 환경을 켜고 <code>model</code> 폴더로 이동합니다(환경 이름이 다르면 바꿔 쓰세요).</li>
+          <li>셋째 줄로 1·2단계를 실행합니다. 끝나면 <code>results\</code> 아래에 <code>stage2_날짜_시각</code> 폴더가 새로 생깁니다.</li>
+          <li>넷째 줄의 <code>stage2_&lt;새 폴더&gt;</code> 를 방금 생긴 폴더 이름으로 바꿔 실행합니다. 3단계(TxGNN, 최종 표)까지 진행됩니다.</li>
+        </ol>
+        <pre id="cmdOut"></pre>
+        <button id="copyBtn">복사</button>
+        <p class="note">3단계에 <code>--final-csv</code> 를 빼면 예전 화합물의 2단계 결과를 재사용하므로 꼭 넣어야 합니다.</p>
+      </details>
+    </section>
+  </main>
+</div>
+
+<script>
+const S = { files: new Map(), runs: [], data: {}, charts: {} };
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = (v, d = 3) => (v === null || v === undefined || v === '' || isNaN(v)) ? '' : Number(v).toFixed(d);
+const isTrue = v => v === true || String(v).toLowerCase() === 'true';
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ---------- 파일 찾기 ----------
+// run_config.json 의 절대경로는 다른 PC 경로일 수 있어 "부모폴더/파일명" 으로 찾는다.
+function key(parts) { return parts.slice(-2).join('/'); }
+function findFile(absPath) {
+  if (!absPath) return null;
+  const parts = absPath.split(/[\\/]/);
+  return S.files.get(key(parts)) || S.files.get(parts[parts.length - 1]) || null;
+}
+function fileIn(dir, name) { return S.files.get(dir + '/' + name) || null; }
+async function readCsv(file) {
+  if (!file) return null;
+  const text = (await file.text()).replace(/^﻿/, '');
+  return Papa.parse(text, { header: true, skipEmptyLines: true, dynamicTyping: true }).data;
+}
+async function readJson(file) { return file ? JSON.parse((await file.text()).replace(/^﻿/, '')) : null; }
+
+document.getElementById('folderInput').addEventListener('change', async e => {
+  S.files.clear();
+  for (const f of e.target.files) {
+    const parts = f.webkitRelativePath.split('/');
+    if (!/\.(csv|json)$/i.test(f.name)) continue;
+    S.files.set(key(parts), f);
+    if (!S.files.has(f.name)) S.files.set(f.name, f);
+  }
+  await buildRunList();
+});
+
+async function buildRunList(selectStep3) {
+  const dirs = [...S.files.keys()].filter(k => k.endsWith('/run_config.json')).map(k => k.split('/')[0]);
+  const step3 = dirs.filter(d => d.startsWith('step3_')).sort().reverse();
+  const used = new Set();
+  const runs = [];
+  for (const d of step3) {
+    const cfg = await readJson(fileIn(d, 'run_config.json'));
+    const s2 = cfg && cfg.final_csv ? cfg.final_csv.split(/[\\/]/).slice(-2)[0] : null;
+    if (s2) used.add(s2);
+    runs.push({ step3: d, stage2: s2, label: `${cfg?.compound_name || '이름 없음'} · ${d}` });
+  }
+  // step3 없이 2단계까지만 돈 실행도 보여준다
+  for (const d of dirs.filter(d => d.startsWith('stage2_') && !used.has(d)).sort().reverse())
+    runs.push({ step3: null, stage2: d, label: `2단계만 · ${d}` });
+
+  const sel = document.getElementById('runSelect');
+  if (!runs.length) {
+    if (!S.server) alert('run_config.json 이 있는 step3_* 또는 stage2_* 폴더를 찾지 못했습니다. DTI_project/results 폴더를 골랐는지 확인하세요.');
+    return;
+  }
+  S.runs = runs;
+  sel.innerHTML = runs.map((r, i) => `<option value="${i}">${esc(r.label)}</option>`).join('');
+  sel.hidden = false;
+  sel.onchange = () => loadRun(runs[sel.value]);
+  const i = Math.max(0, runs.findIndex(r => r.step3 === selectStep3));
+  sel.value = i;
+  await loadRun(runs[i]);
+}
+
+async function loadRun(run) {
+  const D = {};
+  D.cfg3 = run.step3 ? await readJson(fileIn(run.step3, 'run_config.json')) : null;
+  D.cfg2 = run.stage2 ? await readJson(fileIn(run.stage2, 'run_config.json')) : null;
+  D.top100 = D.cfg2 ? await readCsv(findFile(D.cfg2.step1_result_csv)) : null;
+  if (run.stage2) {
+    D.rerank = await readCsv(fileIn(run.stage2, 'rerank_top100.csv'));
+    D.profile = await readCsv(fileIn(run.stage2, 'top20_attention_profile.csv'));
+    D.sites = await readCsv(fileIn(run.stage2, 'detail_sites.csv'));
+  }
+  if (run.step3) {
+    D.diseases = await readCsv(fileIn(run.step3, 'disease_candidates_final.csv'));
+    D.targetMap = await readCsv(fileIn(run.step3, 'ot_target_map.csv'));
+    D.safety = await readCsv(fileIn(run.step3, 'target_safety_summary.csv'));
+    D.pathways = await readCsv(fileIn(run.step3, 'target_pathways_summary.csv'));
+    D.sideEffects = await readCsv(fileIn(run.step3, 'known_side_effects.csv'));
+  }
+  D.run = run;
+  S.data = D;
+  renderAll();
+}
+
+// ---------- 공통 ----------
+function geneOf(row) {
+  const m = (S.data.targetMap || []).find(t => t.id === row.id);
+  if (m && m.gene_symbol) return m.gene_symbol;
+  const h = String(row.raw_header || '');
+  const gn = h.match(/GN=(\S+)/);
+  if (gn) return gn[1];
+  const nm = h.split('|')[2];
+  return nm ? nm.split('_HUMAN')[0] : row.uniprot_id;
+}
+function typeBadge(t) { return t === 'mutant' ? '<span class="badge mut">mutant</span>' : '<span class="badge">WT</span>'; }
+
+// rows, cols: [{key,label,num,fmt(v,row),wrap}], opts: {search, onClick, rowClass}
+function renderTable(el, rows, cols, opts = {}) {
+  if (!rows) { el.innerHTML = '<p class="note">이 실행에 해당 파일이 없습니다.</p>'; return; }
+  let sortKey = null, asc = true, q = '';
+  const draw = () => {
+    let r = rows;
+    if (q) r = r.filter(x => cols.some(c => String(x[c.key] ?? '').toLowerCase().includes(q)));
+    if (sortKey) r = [...r].sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      if (x === y) return 0;
+      if (x === null || x === undefined || x === '') return 1;
+      if (y === null || y === undefined || y === '') return -1;
+      return (x < y ? -1 : 1) * (asc ? 1 : -1);
+    });
+    el.querySelector('.count').textContent = `${r.length} / ${rows.length}행`;
+    el.querySelector('thead').innerHTML = '<tr>' + cols.map(c =>
+      `<th class="${c.num ? 'num' : ''}" data-k="${c.key}">${esc(c.label)}${sortKey === c.key ? (asc ? ' ▲' : ' ▼') : ''}</th>`).join('') + '</tr>';
+    el.querySelector('tbody').innerHTML = r.map(x => {
+      const i = rows.indexOf(x);
+      const cls = [opts.onClick ? 'click' : '', opts.rowClass ? opts.rowClass(x) : ''].join(' ');
+      return `<tr class="${cls}" data-i="${i}">` + cols.map(c => {
+        const v = c.fmt ? c.fmt(x[c.key], x) : esc(x[c.key]);
+        return `<td class="${c.num ? 'num' : ''} ${c.wrap ? 'wrap' : ''}">${v}</td>`;
+      }).join('') + '</tr>';
+    }).join('');
+  };
+  el.innerHTML = `<div class="toolbar">${opts.search === false ? '' : '<input type="search" placeholder="검색">'}<span class="count"></span></div>
+    <div class="tablewrap"><table><thead></thead><tbody></tbody></table></div>`;
+  const s = el.querySelector('input[type=search]');
+  if (s) s.oninput = () => { q = s.value.trim().toLowerCase(); draw(); };
+  el.querySelector('thead').onclick = e => {
+    const k = e.target.closest('th')?.dataset.k; if (!k) return;
+    asc = sortKey === k ? !asc : true; sortKey = k; draw();
+  };
+  el.querySelector('tbody').onclick = e => {
+    const tr = e.target.closest('tr'); if (!tr || !opts.onClick) return;
+    el.querySelectorAll('tr.sel').forEach(t => t.classList.remove('sel'));
+    tr.classList.add('sel');
+    opts.onClick(rows[tr.dataset.i]);
+  };
+  draw();
+}
+
+function renderAll() {
+  const D = S.data;
+  const cfg = D.cfg3 || D.cfg2 || {};
+  document.getElementById('runMeta').innerHTML =
+    `<span><b>${esc(cfg.compound_name || '화합물')}</b></span>` +
+    (cfg.query_drug_id ? `<span>${esc(cfg.query_drug_id)}</span>` : '') +
+    `<span class="smiles" title="${esc(cfg.smiles)}">${esc(cfg.smiles)}</span>`;
+  document.querySelectorAll('nav a').forEach(a => {
+    const v = a.dataset.view;
+    a.classList.toggle('disabled', (v === 'step3' || v === 'safety') && !D.run.step3);
+  });
+  renderOverview(); renderStep1(); renderStep2(); renderStep3(); renderSafety();
+  if (!S.server && cfg.smiles && !document.getElementById('c_smiles').value) { document.getElementById('c_smiles').value = cfg.smiles; renderCommand(); }
+}
+
+// ---------- 개요 ----------
+function renderOverview() {
+  const D = S.data;
+  document.getElementById('emptyState').hidden = true;
+  document.getElementById('overviewBody').hidden = false;
+  document.getElementById('overviewSub').textContent =
+    `2단계: ${D.run.stage2 || '-'} · 3단계: ${D.run.step3 || '-'}`;
+  const finals = (D.rerank || []).filter(r => isTrue(r.in_final));
+  const steps = [
+    ['인간 단백질 전체 (ESM-2)', '약 11.3만'],
+    ['① 스크리닝 Top', D.top100 ? D.top100.length : '-'],
+    ['② IC50 재랭킹 Top', D.cfg2 ? D.cfg2.top_n : '-'],
+    ['② 최종 표적', finals.length || (D.cfg2 ? D.cfg2.final_n : '-')],
+  ];
+  document.getElementById('funnel').innerHTML = steps.map((s, i) =>
+    `<div style="width:${100 - i * 10}%">${esc(s[0])} <b>${esc(s[1])}</b></div>`).join('');
+
+  const td = document.getElementById('topDiseases');
+  if (D.diseases) {
+    td.innerHTML = '<table><tbody>' + D.diseases.slice(0, 5).map(d =>
+      `<tr><td>${esc(d.rank)}</td><td>${esc(d.disease_name)}</td><td>${esc(d.targets)}</td>
+       <td class="num">OT ${num(d.max_score, 2)}</td>
+       <td class="num">${d.txgnn_top_pct !== null && d.txgnn_top_pct !== undefined ? 'TxGNN 상위 ' + num(d.txgnn_top_pct, 1) + '%' : ''}</td></tr>`).join('') + '</tbody></table>';
+  } else td.innerHTML = '<p class="note">3단계 결과가 없는 실행입니다.</p>';
+
+  document.getElementById('finalCards').innerHTML = finals.map(r => `
+    <div class="tcard" data-id="${esc(r.id)}">
+      <div class="g">${esc(geneOf(r))} ${typeBadge(r.type)}</div>
+      <div class="s">${esc(r.id)} · ${esc(r.sequence_length)} aa</div>
+      <div class="s">pred pIC50 ${num(r.pred_ic50, 2)} · peak ${num(r.attention_peak_score, 2)}</div>
+      <div class="s">peak ${esc(r.peak_start)}–${esc(r.peak_end)} <code>${esc(r.peak_sequence)}</code></div>
+    </div>`).join('') || '<p class="note">최종 표적 정보가 없습니다.</p>';
+  document.querySelectorAll('#finalCards .tcard').forEach(c => c.onclick = () => {
+    show('step2');
+    const row = D.rerank.find(r => r.id === c.dataset.id);
+    if (row) showAttention(row);
+  });
+}
+
+// ---------- ① ----------
+function renderStep1() {
+  renderTable(document.getElementById('step1Table'), S.data.top100, [
+    { key: 'rank', label: '순위', num: true },
+    { key: 'id', label: 'ID' },
+    { key: 'uniprot_id', label: 'UniProt' },
+    { key: 'raw_header', label: '유전자', fmt: (v, r) => esc(geneOf(r)) },
+    { key: 'type', label: '유형', fmt: typeBadge },
+    { key: 'length', label: '길이', num: true },
+    { key: 'ki_prob', label: 'Ki 확률', num: true, fmt: v => num(v) },
+    { key: 'kd_prob', label: 'Kd 확률', num: true, fmt: v => num(v) },
+  ]);
+}
+
+// ---------- ② ----------
+function renderStep2() {
+  const top = (S.data.rerank || []).filter(r => isTrue(r.in_top_n));
+  renderTable(document.getElementById('step2Table'), S.data.rerank ? top : null, [
+    { key: 'stage2_rank', label: '2단계 순위', num: true },
+    { key: 'stage1_rank', label: '1단계 순위', num: true },
+    { key: 'id', label: 'ID' },
+    { key: 'raw_header', label: '유전자', fmt: (v, r) => esc(geneOf(r)) },
+    { key: 'type', label: '유형', fmt: typeBadge },
+    { key: 'pred_ic50', label: 'pred pIC50', num: true, fmt: v => num(v, 2) },
+    { key: 'peak_rank', label: 'peak 순위', num: true },
+    { key: 'attention_peak_score', label: 'peak 점수', num: true, fmt: v => num(v, 2) },
+    { key: 'peak_sequence', label: 'peak 서열', fmt: (v, r) => `${esc(r.peak_start)}–${esc(r.peak_end)} <code>${esc(v)}</code>` },
+    { key: 'in_final', label: '최종', fmt: v => isTrue(v) ? '✔' : '' },
+  ], { onClick: showAttention, rowClass: r => isTrue(r.in_final) ? 'final' : '' });
+  document.getElementById('attnCard').hidden = true;
+  const finals = (S.data.rerank || []).filter(r => isTrue(r.in_final));
+  const box = document.getElementById('finalDesc');
+  box.innerHTML = finals.length ? '' : '<p class="note">최종 표적 정보가 없습니다.</p>';
+  finals.forEach(r => { const d = document.createElement('div'); box.appendChild(d); renderProteinDesc(d, r); });
+}
+
+// ---------- 단백질 설명 (UniProt REST, 브라우저에서 직접 조회) ----------
+const UNIPROT = new Map();
+function fetchUniprot(acc) {
+  const base = String(acc).replace(/-\d+$/, '');  // 이소폼(O15260-3)은 대표 항목으로 조회
+  if (!UNIPROT.has(base)) UNIPROT.set(base,
+    fetch(`https://rest.uniprot.org/uniprotkb/${encodeURIComponent(base)}.json?fields=protein_name,gene_names,cc_function,keyword`)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status)));
+  return UNIPROT.get(base);
+}
+
+async function renderProteinDesc(el, row) {
+  const variant = row.type === 'mutant' ? String(row.id).split('_').pop() : null;
+  const m = variant && variant.match(/^([A-Z])(\d+)([A-Z])$/);
+  const varText = m ? `변이 서열: ${m[2]}번 아미노산 ${m[1]} → ${m[3]} (${variant})`
+    : String(row.uniprot_id).includes('-') ? `이소폼 ${row.uniprot_id}` : '정상(WT) 서열';
+  el.className = 'pcard';
+  el.innerHTML = `<div class="g">${esc(geneOf(row))} ${typeBadge(row.type)}</div>
+    <div class="s">${esc(varText)}</div><p class="note">UniProt 정보를 불러오는 중…</p>`;
+  let e;
+  try { e = await fetchUniprot(row.uniprot_id); }
+  catch {
+    el.querySelector('.note').textContent = 'UniProt 정보를 불러오지 못했습니다(인터넷 연결 확인).';
+    return;
+  }
+  const name = e.proteinDescription?.recommendedName?.fullName?.value || e.proteinDescription?.submissionNames?.[0]?.fullName?.value || '';
+  const fn = (e.comments || []).filter(c => c.commentType === 'FUNCTION').flatMap(c => c.texts.map(t => t.value)).join(' ')
+    .replace(/\s*\((?:PubMed|By similarity|Probable|Ref\.)[^)]*\)/g, '') || 'UniProt 에 기능 설명이 없습니다.';
+  const kws = (e.keywords || []).filter(k => ['Biological process', 'Molecular function', 'Disease'].includes(k.category)).map(k => k.name);
+  el.innerHTML = `<div class="g">${esc(geneOf(row))} ${typeBadge(row.type)}</div>
+    <div class="s">${esc(name)} · <a href="https://www.uniprot.org/uniprotkb/${esc(e.primaryAccession)}" target="_blank" rel="noopener">${esc(e.primaryAccession)}</a></div>
+    <div class="s">${esc(varText)}</div>
+    <p class="fn clamp" title="눌러서 펼치기/접기">${esc(fn)}</p>
+    ${kws.length ? `<div class="chips">${kws.map(k => `<span>${esc(k)}</span>`).join('')}</div>` : ''}`;
+  el.querySelector('.fn').onclick = ev => ev.currentTarget.classList.toggle('clamp');
+}
+
+function showAttention(row) {
+  const prof = (S.data.profile || []).filter(p => p.id === row.id).sort((a, b) => a.residue_index - b.residue_index);
+  const sites = (S.data.sites || []).filter(s => s.id === row.id);
+  const card = document.getElementById('attnCard');
+  card.hidden = false;
+  document.getElementById('attnTitle').textContent = `${geneOf(row)} (${row.id}) attention 프로필`;
+  renderProteinDesc(document.getElementById('attnDesc'), row);
+  if (!prof.length) {
+    document.getElementById('seqView').innerHTML = '<p class="note">이 단백질의 attention 프로필이 없습니다.</p>';
+    if (S.charts.attn) S.charts.attn.destroy();
+    document.getElementById('siteTable').innerHTML = '';
+    return;
+  }
+  const inPeak = i => i >= row.peak_start && i <= row.peak_end;
+  const inSite = i => sites.some(s => i >= s.start && i <= s.end);
+  const labels = prof.map(p => p.residue_index);
+  const vals = prof.map(p => p.attention);
+  if (S.charts.attn) S.charts.attn.destroy();
+  S.charts.attn = new Chart(document.getElementById('attnChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'attention', data: vals, borderColor: cssVar('--accent'), borderWidth: 1, pointRadius: 0 },
+      { label: 'peak', data: prof.map((p, i) => inPeak(p.residue_index) ? vals[i] : null), borderColor: cssVar('--peak'),
+        backgroundColor: cssVar('--peak') + '55', fill: 'origin', pointRadius: 0, borderWidth: 2, spanGaps: false },
+      { label: 'site', data: prof.map((p, i) => inSite(p.residue_index) ? vals[i] : null), borderColor: cssVar('--site'),
+        backgroundColor: cssVar('--site') + '44', fill: 'origin', pointRadius: 0, borderWidth: 2, spanGaps: false },
+    ] },
+    options: { animation: false, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { title: it => `${prof[it[0].dataIndex].aa}${labels[it[0].dataIndex]}` } } },
+      scales: { x: { ticks: { maxTicksLimit: 12, color: cssVar('--muted') }, grid: { display: false } },
+        y: { ticks: { color: cssVar('--muted') }, grid: { color: cssVar('--line') } } } },
+  });
+  let html = '';
+  prof.forEach((p, i) => {
+    const n = p.residue_index;
+    if (i % 60 === 0) html += (i ? '<br>' : '') + `<span class="idx">${n}</span>`;
+    else if (i % 10 === 0) html += ' ';
+    const cls = inSite(n) ? 'st' : inPeak(n) ? 'pk' : '';
+    html += cls ? `<span class="${cls}" title="${esc(p.aa)}${n}">${esc(p.aa)}</span>` : esc(p.aa);
+  });
+  document.getElementById('seqView').innerHTML = html;
+  const st = document.getElementById('siteTable');
+  if (sites.length) renderTable(st, sites, [
+    { key: 'site_rank', label: '부위 순위', num: true },
+    { key: 'start', label: '시작', num: true },
+    { key: 'end', label: '끝', num: true },
+    { key: 'sequence', label: '서열', fmt: v => `<code>${esc(v)}</code>` },
+    { key: 'mean_score', label: '평균 점수', num: true, fmt: v => num(v) },
+    { key: 'spearman_attention_vs_ablation', label: 'ρ attn·ablation', num: true, fmt: v => num(v, 2) },
+    { key: 'spearman_gradient_vs_ablation', label: 'ρ grad·ablation', num: true, fmt: v => num(v, 2) },
+  ], { search: false });
+  else st.innerHTML = '<p class="note">결합 부위 상세 분석은 최종 표적에만 있습니다.</p>';
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ---------- ③ ----------
+function renderStep3() {
+  const rows = S.data.diseases;
+  renderTable(document.getElementById('step3Table'), rows, [
+    { key: 'rank', label: '순위', num: true },
+    { key: 'disease_name', label: '질병' },
+    { key: 'targets', label: '표적' },
+    { key: 'max_score', label: 'OT 최대', num: true, fmt: v => num(v, 2) },
+    { key: 'mean_score', label: 'OT 평균', num: true, fmt: v => num(v, 2) },
+    { key: 'txgnn_rank', label: 'TxGNN 순위', num: true, fmt: v => num(v, 0) },
+    { key: 'txgnn_top_pct', label: 'TxGNN 상위%', num: true, fmt: v => num(v, 1) },
+    { key: 'txgnn_score_source', label: '점수 출처', fmt: (v, r) => v === 'proxy'
+        ? `<span class="badge proxy">proxy · ${esc(r.txgnn_best_drug)}</span>` : esc(v) },
+    { key: 'txgnn_known_in_kg', label: 'KG 기존', fmt: esc },
+    { key: 'evidence_types', label: '근거 유형' },
+    { key: 'supporting_pathways', label: '관련 경로', wrap: true },
+  ]);
+  const box = document.getElementById('topBars');
+  if (!rows) { box.innerHTML = ''; document.getElementById('barsNote').textContent = ''; return; }
+  const hasPct = r => r.txgnn_top_pct !== null && r.txgnn_top_pct !== undefined && r.txgnn_top_pct !== '';
+  const top = [...rows].sort((a, b) => a.rank - b.rank).slice(0, 20);
+  // TxGNN 상위 %는 상위 20개가 대부분 0~10% 에 몰려 있어, 이 20개 중 최댓값까지를 막대 범위로 쓴다
+  const limit = Math.max(5, Math.ceil(Math.max(0, ...top.filter(hasPct).map(r => r.txgnn_top_pct)) / 5) * 5);
+  const bar = (w, cls, text) => `<div class="bar ${cls}"><div><i style="width:${Math.max(0, Math.min(100, w))}%"></i></div><span>${text}</span></div>`;
+  box.innerHTML = `<div class="h">순위</div><div class="h">질병 (표적)</div>
+      <div class="h">표적-질병 근거 · Open Targets (0~1)</div><div class="h">약물-질병 예측 · TxGNN 상위 % (0~${limit}%)</div>` +
+    top.map(r => `<div class="r">${esc(r.rank)}</div>
+      <div><div>${esc(r.disease_name)}</div><div class="note">${esc(r.targets)}</div></div>
+      ${bar(r.max_score * 100, '', num(r.max_score, 2))}
+      ${hasPct(r) ? bar((1 - r.txgnn_top_pct / limit) * 100, 'tx', `상위 ${num(r.txgnn_top_pct, 1)}%`
+          + (r.txgnn_score_source === 'proxy' ? ` <span class="badge proxy">proxy</span>` : '')) : '<div class="note">TxGNN 점수 없음</div>'}`).join('');
+  document.getElementById('barsNote').textContent =
+    `전체 ${rows.length}개 중 상위 20개입니다. 나머지는 아래 표에서 볼 수 있습니다. TxGNN 막대는 상위 0% 일 때 꽉 차고 상위 ${limit}% 일 때 비어 있습니다.`;
+}
+
+// ---------- ④ ----------
+function renderSafety() {
+  const D = S.data;
+  const box = document.getElementById('safetyCards');
+  if (!D.safety && !D.pathways) { box.innerHTML = '<p class="note">3단계 결과가 없는 실행입니다.</p>'; }
+  else {
+    const genes = [...new Set([...(D.safety || []), ...(D.pathways || [])].map(r => r.gene_symbol))];
+    box.innerHTML = genes.map(g => {
+      const s = (D.safety || []).find(r => r.gene_symbol === g) || {};
+      const p = (D.pathways || []).find(r => r.gene_symbol === g) || {};
+      const list = v => v ? `<div class="chips">${String(v).split(/;\s*/).filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('')}</div>` : '<span class="note">없음</span>';
+      return `<div class="card"><h3>${esc(g)}</h3>
+        <p class="note">알려진 부작용</p>${list(s.known_side_effects)}
+        <p class="note">가능한 부작용</p>${list(s.possible_side_effects)}
+        <p class="note">경로 (${esc(p.n_pathways ?? 0)}개)</p>${list(p.pathways)}
+        <p class="note" style="margin-top:10px">${esc(String(s.summary ?? '').replace(/\s*\([^()]*참고\)/g, ''))}</p></div>`;
+    }).join('');
+  }
+  const se = D.sideEffects || [];
+  document.getElementById('seTitle').textContent = `입력 약물의 알려진 부작용 (${se.length}개)`;
+  document.getElementById('seChips').innerHTML = se.length
+    ? se.map(r => `<span>${esc(r.effect_name)}</span>`).join('') : '<span class="note">없음 (신규 화합물이거나 3단계 결과 없음)</span>';
+}
+
+// ---------- 실행 명령 ----------
+function renderCommand() {
+  const v = id => document.getElementById(id).value.trim();
+  const c = id => document.getElementById(id).checked;
+  const smiles = v('c_smiles') || '<SMILES>';
+  const s2 = [`--smiles "${smiles}"`];
+  if (v('c_topn')) s2.push(`--top-n ${v('c_topn')}`);
+  if (v('c_finaln')) s2.push(`--final-n ${v('c_finaln')}`);
+  if (v('c_peak')) s2.push(`--peak-method ${v('c_peak')}`);
+  const s3 = ['--auto-chain', '--final-csv "..\\results\\stage2_<새 폴더>\\final5_proteins.csv"', `--smiles "${smiles}"`];
+  if (v('c_drugid')) s3.push(`--drug-id ${v('c_drugid')}`);
+  if (v('c_name')) s3.push(`--drug-name "${v('c_name')}" --compound-name "${v('c_name')}"`);
+  if (c('c_proxy')) s3.push('--proxy-if-missing');
+  if (c('c_writedb')) s3.push('--write-db');
+  document.getElementById('cmdOut').textContent = [
+    'conda activate p_proj', 'cd DTI_project\\model',
+    `python step2_Top20_regression.py ${s2.join(' ')}`,
+    `python step3_ot_txgnn_link.py prepare ${s3.join(' ')}`,
+  ].join('\n');
+}
+document.querySelectorAll('#view-command input, #view-command select').forEach(el => el.addEventListener('input', renderCommand));
+document.getElementById('copyBtn').onclick = async () => {
+  try { await navigator.clipboard.writeText(document.getElementById('cmdOut').textContent); document.getElementById('copyBtn').textContent = '복사됨'; }
+  catch { document.getElementById('copyBtn').textContent = '복사 실패: 직접 선택하세요'; }
+  setTimeout(() => document.getElementById('copyBtn').textContent = '복사', 1500);
+};
+renderCommand();
+
+// ---------- 서버 모드: 분석 실행 ----------
+const STAGES = [['step12', '1·2단계 스크리닝·재랭킹'], ['prepare', '3단계 질병 연결'], ['txgnn', '3단계 TxGNN 점수'], ['finalize', '3단계 최종 표']];
+const JOB = { since: 0, lines: [], timer: null, step3: null };
+
+// 서버의 results 폴더를 폴더 선택과 같은 형태(S.files)로 읽어 온다
+async function loadServerFiles(selectStep3) {
+  const { files } = await (await fetch('/api/list')).json();
+  S.files.clear();
+  for (const rel of files) {
+    const parts = ('results/' + rel).split('/');
+    const f = { name: parts.at(-1), text: () => fetch('/api/file?path=' + encodeURIComponent(rel)).then(r => r.text()) };
+    S.files.set(key(parts), f);
+    if (!S.files.has(f.name)) S.files.set(f.name, f);
+  }
+  await buildRunList(selectStep3);
+}
+
+function formParams() {
+  const v = id => document.getElementById(id).value.trim();
+  return { smiles: v('c_smiles'), compound_name: v('c_name'), drug_id: v('c_drugid'), top_n: v('c_topn'),
+    final_n: v('c_finaln'), peak_method: v('c_peak'),
+    proxy: document.getElementById('c_proxy').checked, write_db: document.getElementById('c_writedb').checked };
+}
+
+async function startRun() {
+  const msg = document.getElementById('runMsg');
+  msg.textContent = '';
+  const res = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formParams()) });
+  const body = await res.json();
+  if (!res.ok) { msg.textContent = body.error; return; }
+  JOB.since = 0;
+  JOB.lines = [];
+  pollJob();
+}
+
+async function pollJob() {
+  clearTimeout(JOB.timer);
+  let j;
+  try { j = await (await fetch('/api/job?since=' + JOB.since)).json(); }
+  catch { document.getElementById('jobMsg').textContent = '서버에 연결할 수 없습니다. 서버 터미널이 켜져 있는지 확인하세요.'; return; }
+  if (j.state === 'idle') return;
+  const running = j.state === 'running';
+  document.getElementById('jobCard').hidden = false;
+  document.getElementById('runBtn').disabled = running;
+  document.getElementById('cancelBtn').hidden = !running;
+  const sec = Math.round(j.elapsed), mm = Math.floor(sec / 60);
+  const label = { running: '실행 중', done: '완료', failed: '실패', cancelled: '중단됨' }[j.state];
+  document.getElementById('jobTitle').textContent =
+    `${j.params.compound_name || j.params.smiles} · ${label} (${mm}분 ${sec % 60}초)`;
+  const cur = STAGES.findIndex(s => s[0] === j.stage);
+  document.getElementById('jobStages').innerHTML = STAGES.map(([, name], i) => {
+    const cls = j.state === 'done' || i < cur ? 'done' : i === cur ? (running ? 'now' : 'bad') : '';
+    return `<span class="${cls}">${cls === 'done' ? '✔ ' : cls === 'now' ? '◐ ' : ''}${esc(name)}</span>`;
+  }).join('');
+  // 마지막 줄은 진행 막대로 덮어써질 수 있어 매번 마지막 한 줄부터 다시 받는다
+  JOB.lines.length = Math.min(JOB.lines.length, JOB.since);
+  JOB.lines.push(...j.lines);
+  JOB.since = Math.max(0, j.next - 1);
+  const log = document.getElementById('jobLog');
+  const atBottom = log.scrollTop + log.clientHeight >= log.scrollHeight - 20;
+  log.textContent = JOB.lines.join('\n');
+  if (atBottom) log.scrollTop = log.scrollHeight;
+  document.getElementById('jobMsg').textContent = j.error || (running ? '브라우저를 닫아도 분석은 서버에서 계속됩니다.' : '');
+  const btn = document.getElementById('openResultBtn');
+  btn.hidden = j.state !== 'done';
+  if (running) JOB.timer = setTimeout(pollJob, 1500);
+  else if (j.state === 'done' && JOB.step3 !== j.step3_dir) {
+    JOB.step3 = j.step3_dir;
+    btn.onclick = async () => { await loadServerFiles(j.step3_dir); show('overview'); };
+    await loadServerFiles(j.step3_dir);
+  }
+}
+
+async function initServerMode() {
+  try {
+    const r = await fetch('/api/list');
+    if (!r.ok) throw 0;
+  } catch { return false; }
+  S.server = true;
+  document.getElementById('folderBtn').hidden = true;
+  document.getElementById('runBar').hidden = false;
+  document.getElementById('cmdSub').textContent = 'SMILES 를 넣고 실행하면 서버가 1·2·3단계를 차례로 돌립니다. 수 분에서 수십 분 걸립니다.';
+  document.querySelector('#emptyState h2').textContent = '아직 분석 결과가 없습니다';
+  document.querySelector('#emptyState p').innerHTML = '왼쪽 <b>＋ 새 분석</b>에서 SMILES 를 넣고 실행하세요.';
+  document.getElementById('runBtn').onclick = startRun;
+  document.getElementById('cancelBtn').onclick = () => fetch('/api/cancel', { method: 'POST' });
+  await loadServerFiles();
+  await pollJob();
+  return true;
+}
+
+initServerMode().then(ok => {
+  if (!ok) document.getElementById('cmdSub').textContent =
+    '파일로 직접 열어서 실행 버튼이 없습니다. 분석을 실행하려면 python ui\\server.py 로 서버를 켜고 http://localhost:8000 으로 접속하세요. 서버 없이 실행하려면 아래 "터미널에서 실행하는 방법"을 참고하세요.';
+  if (!ok) document.getElementById('cmdCard').open = true;
+});
+
+// ---------- 화면 전환 ----------
+function show(view) {
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.dataset.view === view));
+  document.querySelectorAll('main section').forEach(s => s.classList.toggle('active', s.id === 'view-' + view));
+  // 숨겨진 상태에서 만든 차트는 크기가 0 이라 보일 때 다시 맞춘다
+  Object.values(S.charts).forEach(c => c.resize());
+  window.scrollTo(0, 0);
+}
+document.getElementById('nav').onclick = e => {
+  const a = e.target.closest('a'); if (!a) return;
+  e.preventDefault(); show(a.dataset.view);
+};
+</script>
+</body>
+</html>
